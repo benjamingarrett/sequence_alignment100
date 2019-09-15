@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
   void initialize_sequence_alignment(int argc, char **argv);
-  void set_cache_miss_threshold_sequence_alignment(int64_t t);
+  void set_cache_miss_threshold_sequence_alignment(long int t);
   void set_preemptive_halt_sequence_alignment(int p);
   void reset_sequence_alignment(long int p);
   long int get_cache_misses_sequence_alignment();

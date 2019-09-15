@@ -17,5 +17,5 @@
 
 int main(int argc, char** argv){
   solve_sequence_alignment_standalone(argc, argv);
-  return (EXIT_SUCCESS);
+  return 0;
 }

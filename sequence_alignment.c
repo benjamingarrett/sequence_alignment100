@@ -5,7 +5,7 @@
 #include "../memoization/memo_long_int.h"
 #include "sequence_alignment.h"
 
-#define PRINT_REFERENCES  
+//#define PRINT_REFERENCES  
 
 const char * sequence_align_instance_fname_parameter = "--sequence_align_instance_fname";
 
@@ -34,7 +34,8 @@ void align();
 void initialize_sequence_alignment(int argc, char **argv){
   //printf("initialize edit distance\n");
   char instance_fname[200];
-  for(int g=1; g<argc; g++){
+  int64_t g;
+  for(g=1; g<argc; g++){
     if(strcmp(argv[g], sequence_align_instance_fname_parameter) == 0){
       if(g+1 < argc){
         strcpy(instance_fname, &argv[++g][0]);
@@ -46,24 +47,23 @@ void initialize_sequence_alignment(int argc, char **argv){
   int n;
   if((fp = fopen(instance_fname, "r"))==NULL){
     fprintf(stderr, "Error opening instance file:-->%s<--\n", instance_fname);
-    exit(EXIT_FAILURE);
+    exit(0);
   }
   n = fscanf(fp, "%d\n", &nX);
   X = calloc(nX, sizeof(int64_t));
   //printf("sequences:\n");
-  for(int64_t g = 0; g < nX; g++){
+  for(g = 0; g < nX; g++){
     n = fscanf(fp, "%ld", &X[g]);
     //printf(">%ld<", X[g]);
   }
   n = fscanf(fp, "%d\n", &nY);
   Y = calloc(nY, sizeof(int64_t));
-  for(int64_t g = 0; g < nY; g++){
+  for(g = 0; g < nY; g++){
     n = fscanf(fp, "%ld", &Y[g]);
     //printf(">%ld<", Y[g]);
   }
   //printf("\n");
   fclose(fp);
-
   pattern_references = 0;
   cache_reads = 0;
   cache_writes = 0;
@@ -95,7 +95,7 @@ void solve_sequence_alignment_standalone(int argc, char **argv) {
   initialize_long_int_cache(argc, argv);
   initialize_sequence_alignment(argc, argv);
   cost = alignment_cost(nX-1, nY-1);
-  printf("cost %ld LRU queue size %ld cache_misses %ld\n", cost, lru_queue_size, cache_misses);
+  //printf("cost %ld LRU queue size %ld cache_misses %ld\n", cost, lru_queue_size, cache_misses);
   align();
   view_scoring_grid();
 }
@@ -103,9 +103,10 @@ void solve_sequence_alignment_standalone(int argc, char **argv) {
 /* PRIVATE */
 
 void view_scoring_grid(){
+  int64_t g,h;
   printf("Scoring Grid:\n");
-  for(int64_t g = -1; g < nX; g++){
-    for(int64_t h = -1; h < nY; h++){
+  for(g = -1; g < nX; g++){
+    for(h = -1; h < nY; h++){
       printf("%ld ", alignment_cost(g, h));
     }
     printf("\n");
@@ -129,7 +130,7 @@ uint64_t generate_key(int32_t i, int32_t j) {
 
 int64_t memo_alignment_cost(long int len_s, long int len_t);
 
-int64_t alignment_cost(long int len_s, long int len_t) {
+int64_t alignment_cost(long int len_s, long int len_t){
   int64_t * val, len;
   uint64_t * key;
   if(check_preemptive_halt_sequence_align_()){
@@ -173,7 +174,7 @@ int64_t similarity(int64_t i, int64_t j){
   return X_(i) == Y_(j) ? 1 : -1;
 }
 
-int64_t memo_alignment_cost(long int i, long int j) {
+int64_t memo_alignment_cost(long int i, long int j){
   memo_calls++;
   //  printf("%ld %ld\n", i,j);
   if(i <  0 && j >= 0) return -1 * j - 1;
@@ -188,7 +189,7 @@ int64_t memo_alignment_cost(long int i, long int j) {
 }
 
 void align(){
-  printf("align\n");
+  //printf("align\n");
   int64_t longer_size = nX > nY ? nX : nY;
   int64_t * alignmentA = calloc(longer_size, sizeof(int64_t));
   int64_t * alignmentB = calloc(longer_size, sizeof(int64_t));
@@ -211,20 +212,22 @@ void align(){
     }
   }
   int64_t q = g - 1;
-  for(int64_t p = 0; p < g; p++){
+  int64_t p;
+  for(p = 0; p < g; p++){
     buffer[p] = alignmentA[q--];
   }
-  for(int64_t p = 0; p < g; p++){
+  for(p = 0; p < g; p++){
     alignmentA[p] = buffer[p];
   }
   q = h - 1;
-  for(int64_t p = 0; p < h; p++){
+  for(p = 0; p < h; p++){
     buffer[p] = alignmentB[q--];
   }
-  for(int64_t p = 0; p < h; p++){
+  for(p = 0; p < h; p++){
     alignmentB[p] = buffer[p];
-  } 
-  for(int64_t p = 0; p < g; p++){
+  }
+  /*
+  for(p = 0; p < g; p++){
     if(alignmentA[p] != LONG_MAX){
       printf("%ld ", alignmentA[p]);
     } else {
@@ -232,7 +235,7 @@ void align(){
     }
   }
   printf("\n");
-  for(int64_t p = 0; p < h; p++){
+  for(p = 0; p < h; p++){
     if(alignmentB[p] != LONG_MAX){
       printf("%ld ", alignmentB[p]);
     } else {
@@ -240,6 +243,7 @@ void align(){
     }
   }
   printf("\n");
+  */
 }
 
 
