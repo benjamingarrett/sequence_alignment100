@@ -18,12 +18,12 @@
 extern "C" {
 #endif
 
-  void initialize_sequence_alignment(int argc, char **argv);
-  void set_cache_miss_threshold_sequence_alignment(long int t);
-  void set_preemptive_halt_sequence_alignment(int p);
-  void reset_sequence_alignment(long int p);
-  long int get_cache_misses_sequence_alignment();
-  void solve_sequence_alignment();
+  void initialize_seq(int argc, char **argv);
+  void set_cache_miss_threshold_seq(long int t);
+  void set_preemptive_halt_seq(int p);
+  void reset_seq(long int p);
+  long int get_cache_misses_seq();
+  void solve_seq();
   void solve_sequence_alignment_standalone(int argc, char **argv);
 
 #ifdef __cplusplus

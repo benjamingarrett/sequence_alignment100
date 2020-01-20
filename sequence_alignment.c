@@ -1,9 +1,10 @@
 #include<limits.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include "../memoization/memo_long_int.h"
-#include "sequence_alignment.h"
+#include<stdint.h>
+#include<stdio.h>
+#include<string.h>
+#include"../memoization/memo_long_int.h"
+#include"../lcs_instance_reader/lcs_instance_reader.h"
+#include"sequence_alignment.h"
 
 //#define PRINT_REFERENCES  
 
@@ -31,7 +32,7 @@ void align();
 
 /* PUBLIC */
 
-void initialize_sequence_alignment(int argc, char **argv){
+void initialize_seq(int argc, char **argv){
   //printf("initialize edit distance\n");
   char instance_fname[200];
   int64_t g;
@@ -43,57 +44,47 @@ void initialize_sequence_alignment(int argc, char **argv){
     }
   }
   check_preemptive_halt_sequence_align_ = check_preemptive_halt_sequence_align_deactivated;
-  FILE * fp;
-  int n;
-  if((fp = fopen(instance_fname, "r"))==NULL){
-    fprintf(stderr, "Error opening instance file:-->%s<--\n", instance_fname);
-    exit(0);
+  lcs_instance * instance = read_lcs_instance(instance_fname);
+  nX=instance->num_first_sequence;
+  X=calloc(nX,sizeof(int64_t));
+  for(g=0; g<nX; g++){
+    X[g]=instance->first_sequence[g];
   }
-  n = fscanf(fp, "%d\n", &nX);
-  X = calloc(nX, sizeof(int64_t));
-  //printf("sequences:\n");
-  for(g = 0; g < nX; g++){
-    n = fscanf(fp, "%ld", &X[g]);
-    //printf(">%ld<", X[g]);
+  nY=instance->num_second_sequence;
+  Y=calloc(nY,sizeof(int64_t));
+  for(g=0; g<nY; g++){
+    Y[g]=instance->second_sequence[g];
   }
-  n = fscanf(fp, "%d\n", &nY);
-  Y = calloc(nY, sizeof(int64_t));
-  for(g = 0; g < nY; g++){
-    n = fscanf(fp, "%ld", &Y[g]);
-    //printf(">%ld<", Y[g]);
-  }
-  //printf("\n");
-  fclose(fp);
   pattern_references = 0;
   cache_reads = 0;
   cache_writes = 0;
   memo_calls = dist_calls = cache_misses = prev_cache_misses = 0;
 }
 
-void set_cache_miss_threshold_sequence_alignment(int64_t t){
+void set_cache_miss_threshold_seq(int64_t t){
   prev_cache_misses = t;
 }
 
-void set_preemptive_halt_sequence_alignment(int p){
+void set_preemptive_halt_seq(int p){
   check_preemptive_halt_sequence_align_ = p ? check_preemptive_halt_sequence_align_activated : check_preemptive_halt_sequence_align_deactivated;
 }
 
-void reset_sequence_alignment(long int p){
+void reset_seq(long int p){
   memo_calls = dist_calls = cache_misses = 0;
 }
 
-long int get_cache_misses_sequence_alignment(){
+long int get_cache_misses_seq(){
   return cache_misses;
 }
 
-void solve_sequence_alignment(){
+void solve_seq(){
   //printf("solve sequence alignment\n");
   cost = alignment_cost(nX-1, nY-1);
 }
 
 void solve_sequence_alignment_standalone(int argc, char **argv) {
   initialize_long_int_cache(argc, argv);
-  initialize_sequence_alignment(argc, argv);
+  initialize_seq(argc, argv);
   cost = alignment_cost(nX-1, nY-1);
   //printf("cost %ld LRU queue size %ld cache_misses %ld\n", cost, lru_queue_size, cache_misses);
   align();
@@ -152,7 +143,7 @@ int64_t alignment_cost(long int len_s, long int len_t){
   return len;
 }
 
-int X_(long int k){
+int X_seq(long int k){
   pattern_references++;
   //  if(pattern_reference_threshold < pattern_references){
   //    printf("pattern references exceeded threshold\n");
@@ -161,7 +152,7 @@ int X_(long int k){
   return X[k];
 }
 
-int Y_(long int k){
+int Y_seq(long int k){
   pattern_references++;
   //  if(pattern_reference_threshold < pattern_references){
   //    printf("pattern references exceeded threshold\n");
@@ -171,7 +162,7 @@ int Y_(long int k){
 }
 
 int64_t similarity(int64_t i, int64_t j){
-  return X_(i) == Y_(j) ? 1 : -1;
+  return X_seq(i) == Y_seq(j) ? 1 : -1;
 }
 
 int64_t memo_alignment_cost(long int i, long int j){

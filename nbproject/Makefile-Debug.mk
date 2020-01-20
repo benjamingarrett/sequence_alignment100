@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/c56916c5/MurmurHash64A.o \
 	${OBJECTDIR}/_ext/554cfc1b/memo.o \
 	${OBJECTDIR}/_ext/554cfc1b/memo_long_int.o \
+  ${OBJECTDIR}/_ext/554cfc1c/lcs_instance_reader.o \
 	${OBJECTDIR}/sequence_alignment.o \
 	${OBJECTDIR}/main.o
 
@@ -86,6 +87,11 @@ ${OBJECTDIR}/_ext/554cfc1b/memo_long_int.o: ../memoization/memo_long_int.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/554cfc1b
 	${RM} "$@.d"
 	$(COMPILE.c) -g -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/554cfc1b/memo_long_int.o ../memoization/memo_long_int.c
+
+${OBJECTDIR}/_ext/554cfc1c/lcs_instance_reader.o: ../lcs_instance_reader/lcs_instance_reader.c 
+	${MKDIR} -p ${OBJECTDIR}/_ext/554cfc1c
+	${RM} "$@.d"
+	$(COMPILE.c) -g -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/554cfc1c/lcs_instance_reader.o ../lcs_instance_reader/lcs_instance_reader.c
 
 ${OBJECTDIR}/sequence_alignment.o: sequence_alignment.c 
 	${MKDIR} -p ${OBJECTDIR}
