@@ -1,10 +1,11 @@
-#include<limits.h>
-#include<stdint.h>
-#include<stdio.h>
-#include<string.h>
-#include"../memoization/memo_long_int.h"
-#include"../lcs_instance_reader/lcs_instance_reader.h"
-#include"sequence_alignment.h"
+#include <limits.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../memoization/memo_long_int.h"
+#include "../lcs_instance_reader/lcs_instance_reader.h"
+#include "sequence_alignment.h"
 
 //#define PRINT_REFERENCES  
 
@@ -115,7 +116,7 @@ char check_preemptive_halt_sequence_align_activated(){
   return (cache_misses > prev_cache_misses) ? 1 : 0;
 }
 
-uint64_t generate_key(int32_t i, int32_t j) {
+uint64_t generate_key_for_sequence_alignment(int32_t i, int32_t j) {
   return (((int64_t) i) << 32) | (((int64_t) j) & 0xffffffffu);
 }
 
@@ -129,7 +130,7 @@ int64_t alignment_cost(long int len_s, long int len_t){
   }
   dist_calls++;
   key = calloc(1, sizeof (int64_t));
-  *key = generate_key(len_s, len_t);
+  *key = generate_key_for_sequence_alignment(len_s, len_t);
   val = cache_read_long_int(key);
   cache_reads++;
   if(val == NULL){
